@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Injector", "Injector\Inject
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Payload2", "Payload2\Payload2.vcxproj", "{24DBFE9B-5255-4CDC-BEE5-E866D7EABB4E}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Patcher", "Patcher\Patcher.vcxproj", "{352EC32A-50A0-438E-AACB-5315F2E3FE08}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -51,6 +53,14 @@ Global
 		{24DBFE9B-5255-4CDC-BEE5-E866D7EABB4E}.Release|x64.Build.0 = Release|x64
 		{24DBFE9B-5255-4CDC-BEE5-E866D7EABB4E}.Release|x86.ActiveCfg = Release|Win32
 		{24DBFE9B-5255-4CDC-BEE5-E866D7EABB4E}.Release|x86.Build.0 = Release|Win32
+		{352EC32A-50A0-438E-AACB-5315F2E3FE08}.Debug|x64.ActiveCfg = Debug|x64
+		{352EC32A-50A0-438E-AACB-5315F2E3FE08}.Debug|x64.Build.0 = Debug|x64
+		{352EC32A-50A0-438E-AACB-5315F2E3FE08}.Debug|x86.ActiveCfg = Debug|Win32
+		{352EC32A-50A0-438E-AACB-5315F2E3FE08}.Debug|x86.Build.0 = Debug|Win32
+		{352EC32A-50A0-438E-AACB-5315F2E3FE08}.Release|x64.ActiveCfg = Release|x64
+		{352EC32A-50A0-438E-AACB-5315F2E3FE08}.Release|x64.Build.0 = Release|x64
+		{352EC32A-50A0-438E-AACB-5315F2E3FE08}.Release|x86.ActiveCfg = Release|Win32
+		{352EC32A-50A0-438E-AACB-5315F2E3FE08}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
