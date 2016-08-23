@@ -3,6 +3,7 @@
 #include <iostream>
 
 
+
 /*
 01584D6A | 5F                       | pop edi                                                        | starplayer.cpp:1829
 01584D6B | 5E                       | pop esi                                                        |
@@ -10,31 +11,9 @@
 01584D6E | 5D                       | pop ebp                                                        |
 */
 
-DWORD SayChatAction = 0x13e08a0; // offset: 1308A0
-
-//void(*sayChatAction)(const std::string) = (void(*)(const std::string))0x13e08a0;
-DWORD SayChatActionReturnJump;
+DWORD SayChatActionReturnAddress;
 std::string message; //const works
-
-
-// Calling functions in asm:
-/*
-push eax
-push dword ptr ss:[ebp+8]
-push edi
-call dword ptr [SayChatAction]
-*/
-
-void __declspec(naked) sayChat() {
-	__asm {
-		//push eax
-		push dword ptr ss : [message]
-		//push edi
-		call dword ptr[SayChatAction]
-	}
-}
-
-void __declspec(naked) sayChatActionHook() {
+void __declspec(naked) SayChatActionHook() {
 	__asm {
 		push edx
 		mov edx, dword ptr ss : [ebp + 8]
@@ -42,7 +21,6 @@ void __declspec(naked) sayChatActionHook() {
 		pop edx
 	}
 
-	//std::cout << "Message: " << message << std::endl;
 	printf("Message: %s\n", message);
 	//sayChatAction("Hacked");
 
@@ -52,6 +30,25 @@ void __declspec(naked) sayChatActionHook() {
 		pop esi
 		mov esp, ebp
 		pop ebp
-		jmp[SayChatActionReturnJump]
+		jmp[SayChatActionReturnAddress]
+	}
+}
+
+
+// Calling functions in asm:
+/*
+push eax
+push dword ptr ss:[ebp+8]
+push edi
+call dword ptr [SayChatAction]
+*/
+DWORD SayChatAction = 0x13e08a0; // offset: 1308A0
+// void(*sayChatAction)(const std::string) = (void(*)(const std::string))0x13e08a0;
+void __declspec(naked) sayChat() {
+	__asm {
+		//push eax
+		push dword ptr ss : [message]
+		//push edi
+		call dword ptr[SayChatAction]
 	}
 }
