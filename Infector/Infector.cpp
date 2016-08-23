@@ -3,26 +3,17 @@
 
 #include "stdafx.h"
 #include "Syringe.h"
-#include <io.h>
 
 int main()
 {
 
-	
-
-
-
 	// Inject our main dll
-	if (!Syringe::Inject("starbound.exe", "..\\debug\\payload.dll"))
+	if (Syringe::Inject("starbound.exe", "..\\debug\\payload.dll"))
 	{
-		printf("Not loaded.."); // If injection is not sucsessfull 
-	}
-	else
-	{
-		printf("Loaded!"); //  If injection is sucsessfull 
+		printf("DLL Successfully injected. Press any key to exit");
 	}
 
 	std::cin.get();
-    return 0;
+	return 0;
 }
 
