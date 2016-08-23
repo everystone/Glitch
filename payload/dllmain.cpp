@@ -24,17 +24,23 @@ bool Hook(void *toHook, void *ourFun, int len) {
 DWORD jumpBackAddress;
 void __declspec(naked) ourFun() {
 	__asm {
-		mov eax, [ebp - 8]
-		add eax, 1
+		push edx
+
+		pop edx
+
+		push ebp
+		mov ebp, esp
+		push -1
 		jmp [jumpBackAddress]
+
 	}
 }
 
 
 DWORD WINAPI MainThread(LPVOID param) {
 	
-	int hookLength = 6;
-	DWORD hookAddress = 0x0127250E;
+	int hookLength = 5;
+	DWORD hookAddress = 0x00CAA3C0;
 	jumpBackAddress = hookAddress + hookLength;
 
 	Hook((void*)hookAddress, ourFun, hookLength);
@@ -56,11 +62,12 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 	{
 	case DLL_PROCESS_ATTACH:
 		CreateThread(0, 0, MainThread, hModule, 0, 0);
+		//MessageBoxA(0, "Injected", "asd", 0);
 	case DLL_THREAD_ATTACH:
+
 	case DLL_THREAD_DETACH:
 	case DLL_PROCESS_DETACH:
 		break;
 	}
 	return TRUE;
 }
-
