@@ -1,9 +1,16 @@
 #include "stdafx.h"
-#include "util.h"
+#include "Hack.h"
 
 
 
-void util::MakeJMP(BYTE *pAddress, DWORD dwJumpTo, DWORD dwLen)
+DWORD Hack::baseAddress = 0x00;
+
+void Hack::Init(DWORD base)
+{
+	baseAddress = base;
+}
+
+void Hack::MakeJMP(BYTE *pAddress, DWORD dwJumpTo, DWORD dwLen)
 {
 	DWORD dwOldProtect, dwBkup, dwRelAddr;
 
@@ -37,4 +44,17 @@ void util::MakeJMP(BYTE *pAddress, DWORD dwJumpTo, DWORD dwLen)
 
 	return;
 
+}
+
+void Hack::InstallHook(DWORD offset, int hookLength, DWORD hookFunction, DWORD &jumpBackAddress)
+{
+
+	// base: 12b0000
+	// = 0x01584D6A - 0x12b0000 = 0x2D4D6A
+	//DWORD hookAddress = 0x01584D6A; //0x00B74D4B; -- Base + 0x4D4B ?
+	// to find relative address: address - baseaddress
+	DWORD hookAddress = Hack::baseAddress + offset;
+
+	jumpBackAddress = hookAddress + hookLength;
+	MakeJMP((BYTE *)hookAddress, (DWORD)hookFunction, hookLength);
 }

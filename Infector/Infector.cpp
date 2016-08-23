@@ -10,10 +10,15 @@ int main()
 	// Inject our main dll
 	if (Syringe::Inject("starbound.exe", "..\\debug\\payload.dll"))
 	{
-		printf("DLL Successfully injected. Press any key to exit");
+		printf("DLL Successfully injected. Exiting..");
+		Sleep(1000);
+	}
+	else {
+		printf("DLL Injection failed, press return to exit.");
+		std::cin.get();
 	}
 
-	std::cin.get();
+	
 	return 0;
 }
 

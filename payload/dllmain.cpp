@@ -1,17 +1,11 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include "stdafx.h"
 #include "hooks.h"
-#include "functions.h"
+#include "Hack.h"
 #pragma warning(disable:4996) // freeopen
 
 
 
-/*
-01584D6A | 5F                       | pop edi                                                        | starplayer.cpp:1829
-01584D6B | 5E                       | pop esi                                                        |
-01584D6C | 8B E5                    | mov esp,ebp                                                    |
-01584D6E | 5D                       | pop ebp                                                        |
-*/
 
 
 
@@ -23,10 +17,12 @@ DWORD WINAPI MainThread(LPVOID param) {
 	
 	DWORD baseAddress = (DWORD)GetModuleHandle(NULL);
 	printf("Injected!\nBaseAddress: %x", baseAddress);
-	Hooks *hooks = new Hooks(baseAddress);
+	Hack::Init(baseAddress);
 
-
-	hooks->InstallHook(0x2D4D6A, 5, (DWORD)sayChatActionHook, SayChatActionReturnJump);
+	//message = "Injected";
+	//sayChat();
+	// Instlal Starbound hooks
+	Hack::InstallHook(0x2D4D6A, 5, (DWORD)sayChatActionHook, SayChatActionReturnJump);
 
 	//FreeLibraryAndExitThread((HMODULE)param, 0);
 	return 0;
