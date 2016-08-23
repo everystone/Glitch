@@ -62,6 +62,7 @@ DWORD Number;
 void __declspec(naked) ourFun() {
 	__asm {
 		push edx
+
 		mov edx, dword ptr[ebp - 8]
 		mov Number, edx
 		pop edx
@@ -71,14 +72,16 @@ void __declspec(naked) ourFun() {
 		mov eax, dword ptr[ebp - 8]
 		add eax, 1
 		jmp [jumpBackAddress]
+
 	}
 }
 
 
 DWORD WINAPI MainThread(LPVOID param) {
+	
+	int hookLength = 5;
+	DWORD hookAddress = 0x00CAA3C0;
 
-	int hookLength = 6;
-	DWORD hookAddress = 0xcd250E;
 	jumpBackAddress = hookAddress + hookLength;
 
 	MakeJMP((BYTE *)hookAddress, (DWORD)ourFun, hookLength);
@@ -86,9 +89,6 @@ DWORD WINAPI MainThread(LPVOID param) {
 
 	//Hook((void*)hookAddress, ourFun, hookLength);
 
-	//while (true) {
-	//	Sleep(200);
-	//}
 	//FreeLibraryAndExitThread((HMODULE)param, 0);
 	return 0;
 }
@@ -103,11 +103,12 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 	{
 	case DLL_PROCESS_ATTACH:
 		CreateThread(0, 0, MainThread, hModule, 0, 0);
+		//MessageBoxA(0, "Injected", "asd", 0);
 	case DLL_THREAD_ATTACH:
+
 	case DLL_THREAD_DETACH:
 	case DLL_PROCESS_DETACH:
 		break;
 	}
 	return TRUE;
 }
-
