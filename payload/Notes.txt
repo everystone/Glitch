@@ -1,0 +1,48 @@
+
+DWORD g_dwBasePointerAddress =  0/* INPUT YOUR FOUND ADDRESS HERE INSTEAD OF ZERO */;
+DWORD g_dwSpeedOffset =  0; // Set here offsets, which you found
+DWORD g_dwZCoordOffset = 0;
+DWORD* g_pdwSpeed = 0;
+DWORD* g_pdwCoordZ = 0;
+
+if (strcmp ( chCommand , ".setspeed" ) == 0) //If string stored in chCommand is .setspeed , then execute commands
+		{
+			DWORD dwSpeedValue = 0;
+			DWORD dwBuffer = 0; // Temporary storage for memory copied from basepointer address.
+			
+			printf_s("Enter desired value: ");
+			scanf_s("%d%*c",&dwSpeedValue);
+		
+			MemCpyEx((LPVOID)&dwBuffer, (LPVOID)g_dwBasePointerAddress, 4); // Copies memory from the value stored in g_dwBasePointerAddress (In our case, it's the basepointeraddress) to dwBuffer address.
+			g_pdwSpeed = (DWORD*)(dwBuffer + g_dwSpeedOffset); // dwBuffer contains the pointer now. We have to add offset to it.
+			*g_pdwSpeed = dwSpeedValue; // Sets value pointed by this pointer to dwSpeedValue - Desired value.
+			
+			printf_s("\nEnter Command: ");
+		}
+
+
+
+DWORD PBACK  =  0x000000;// <- U need to get the Back Adress with IDA etc. Or do it with SearchPattern. 
+#define SendASM __asm{ push ebp };__asm{ mov ebp, esp };__asm{ sub esp, 18h};__asm{ JMP PBACK}; 
+__declspec(naked) int __cdecl SendPacket (BYTE Header , LPCSTR Format , ... ){SendASM;}  
+
+
+
+int DetouredRecv(SOCKET Socket, char *Buffer, int Length, int Flags); 
+int (__stdcall *PacketRecv)(SOCKET Socket, char *Buffer, int Length, int Flags); 
+
+void Recv() 
+{ 
+	PacketRecv = (int (__stdcall *)(SOCKET, char *, int, int))DetourFunction((PBYTE)recv, (PBYTE)DetouredRecv); 
+}  
+
+int DetouredRecv(SOCKET Socket, char *Buffer, int Length, int Flags) 
+{ 
+	switch(Buffer[2]) 
+	{ 
+	case 0x36: //item drop 
+		break; 
+	 
+	} 
+	return PacketRecv(Socket, Buffer, Length, Flags); 
+}  

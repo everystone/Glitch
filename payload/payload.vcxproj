@@ -142,6 +142,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <Text Include="Notes.txt" />
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
