@@ -13,7 +13,7 @@ bool Hook(void *toHook, void *ourFun, int len) {
 	memset(toHook, 0x90, len);
 	DWORD relativeAdress = ((DWORD)ourFun - (DWORD)toHook) - 5;
 	
-	*(BYTE*)toHook - 0xE9;
+	*(BYTE*)toHook - 0xE9; // 0xE8 = call hook? 0xE9 = jmp hook?
 	*(DWORD*)((DWORD)toHook + 1) = relativeAdress;
 	
 	DWORD temp;
@@ -21,16 +21,56 @@ bool Hook(void *toHook, void *ourFun, int len) {
 	return true;
 }
 
+void MakeJMP(BYTE *pAddress, DWORD dwJumpTo, DWORD dwLen)
+{
+	DWORD dwOldProtect, dwBkup, dwRelAddr;
+
+	// give the paged memory read/write permissions
+
+	VirtualProtect(pAddress, dwLen, PAGE_EXECUTE_READWRITE, &dwOldProtect);
+
+	// calculate the distance between our address and our target location
+	// and subtract the 5bytes, which is the size of the jmp
+	// (0xE9 0xAA 0xBB 0xCC 0xDD) = 5 bytes
+
+	dwRelAddr = (DWORD)(dwJumpTo - (DWORD)pAddress) - 5;
+
+	// overwrite the byte at pAddress with the jmp opcode (0xE9)
+
+	*pAddress = 0xE9;
+
+	// overwrite the next 4 bytes (which is the size of a DWORD)
+	// with the dwRelAddr
+
+	*((DWORD *)(pAddress + 0x1)) = dwRelAddr;
+
+	// overwrite the remaining bytes with the NOP opcode (0x90)
+	// NOP opcode = No OPeration
+
+	for (DWORD x = 0x5; x < dwLen; x++) *(pAddress + x) = 0x90;
+
+	// restore the paged memory permissions saved in dwOldProtect
+
+	VirtualProtect(pAddress, dwLen, dwOldProtect, &dwBkup);
+
+	return;
+
+}
+
 DWORD jumpBackAddress;
+DWORD Number;
 void __declspec(naked) ourFun() {
 	__asm {
 		push edx
 
+		mov edx, dword ptr[ebp - 8]
+		mov Number, edx
 		pop edx
-
-		push ebp
-		mov ebp, esp
-		push -1
+	}
+	std::cout << "read number: " << Number << std::endl;
+	__asm {
+		mov eax, dword ptr[ebp - 8]
+		add eax, 1
 		jmp [jumpBackAddress]
 
 	}
@@ -41,14 +81,15 @@ DWORD WINAPI MainThread(LPVOID param) {
 	
 	int hookLength = 5;
 	DWORD hookAddress = 0x00CAA3C0;
+
 	jumpBackAddress = hookAddress + hookLength;
 
-	Hook((void*)hookAddress, ourFun, hookLength);
+	MakeJMP((BYTE *)hookAddress, (DWORD)ourFun, hookLength);
 
-	while (true) {
-		Sleep(200);
-	}
-	FreeLibraryAndExitThread((HMODULE)param, 0);
+
+	//Hook((void*)hookAddress, ourFun, hookLength);
+
+	//FreeLibraryAndExitThread((HMODULE)param, 0);
 	return 0;
 }
 
