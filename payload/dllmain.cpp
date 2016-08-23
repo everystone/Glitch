@@ -1,6 +1,7 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include "stdafx.h"
 
+#pragma warning(disable:4996) // freeopen
 
 bool Hook(void *toHook, void *ourFun, int len) {
 	if (len < 5) {
@@ -20,6 +21,7 @@ bool Hook(void *toHook, void *ourFun, int len) {
 	VirtualProtect(toHook, len, curProtection, &temp);
 	return true;
 }
+
 
 void MakeJMP(BYTE *pAddress, DWORD dwJumpTo, DWORD dwLen)
 {
@@ -57,20 +59,46 @@ void MakeJMP(BYTE *pAddress, DWORD dwJumpTo, DWORD dwLen)
 
 }
 
+
+/*
+00B74D4B | 50                       | push eax                                                       |
+00B74D4C | FF 75 08                 | push dword ptr ss:[ebp+8]                                      | [ebp+8]:"hei"
+00B74D4F | 57                       | push edi                                                       |
+*/
+// search pattern, entire block: 50 FF 75 08 57
 DWORD jumpBackAddress;
-DWORD Number;
+DWORD SayChatAction = 0x13e08a0;
+
+
+char *message;
+DWORD oldEax;
 void __declspec(naked) ourFun() {
 	__asm {
-		push edx
+		//push eax // printf call modifies this, so we must save it and restore before call to SayChat
+		//mov oldEax, eax
 
-		mov edx, dword ptr[ebp - 8]
-		mov Number, edx
-		pop edx
+		pushfd
+		pushad
+
+		push edx
+		mov edx, dword ptr ss:[ebp + 8]
+		mov message, edx
 	}
-	std::cout << "read number: " << Number << std::endl;
+	
+	//std::cout << "Message: " << message << std::endl;
+	printf("Message: %s\n", message);
+		
+	//MessageBoxA(0, message, "chat", 0);
 	__asm {
-		mov eax, dword ptr[ebp - 8]
-		add eax, 1
+		popfd
+		popad
+
+		//pop eax // printf fucks with this?
+		//pop edx
+		push eax
+		push dword ptr ss:[ebp+8]
+		push edi
+		call dword ptr [SayChatAction]
 		jmp [jumpBackAddress]
 
 	}
@@ -79,14 +107,22 @@ void __declspec(naked) ourFun() {
 
 DWORD WINAPI MainThread(LPVOID param) {
 	
-	int hookLength = 5;
-	DWORD hookAddress = 0x00CAA3C0;
+	int hookLength = 10;
+	DWORD hookAddress = 0x01584D4B; //0x00B74D4B; -- Base + 0x4D4B ?
+	// to find relative address: address - baseaddress
 
 	jumpBackAddress = hookAddress + hookLength;
 
 	MakeJMP((BYTE *)hookAddress, (DWORD)ourFun, hookLength);
 
+	AllocConsole();
+	
+	freopen("CONOUT$", "w", stdout);
 
+	//SetStdOutToNewConsole();
+	DWORD baseAddress = (DWORD)GetModuleHandle(NULL);
+	//std::cout << "Injected\nBaseAddress: " << baseAddress << std::endl;
+	printf("Injected!\nBaseAddress: %x", baseAddress);
 	//Hook((void*)hookAddress, ourFun, hookLength);
 
 	//FreeLibraryAndExitThread((HMODULE)param, 0);
