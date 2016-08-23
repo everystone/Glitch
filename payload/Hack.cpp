@@ -2,7 +2,6 @@
 #include "Hack.h"
 
 
-
 DWORD Hack::baseAddress = 0x00;
 
 void Hack::Init(DWORD base)
@@ -48,6 +47,10 @@ void Hack::MakeJMP(BYTE *pAddress, DWORD dwJumpTo, DWORD dwLen)
 
 void Hack::InstallHook(DWORD offset, int hookLength, DWORD hookFunction, DWORD &jumpBackAddress)
 {
+	if (baseAddress == 0x00) {
+		printf("Base Address is zero, call Hack::Init() before trying to install hooks.");
+		return;
+	}
 
 	// base: 12b0000
 	// = 0x01584D6A - 0x12b0000 = 0x2D4D6A
