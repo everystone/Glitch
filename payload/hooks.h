@@ -3,7 +3,7 @@
 #include <iostream>
 
 
-
+#pragma region Starbound
 /*
 01584D6A | 5F                       | pop edi                                                        | starplayer.cpp:1829
 01584D6B | 5E                       | pop esi                                                        |
@@ -52,3 +52,23 @@ void __declspec(naked) sayChat() {
 		call dword ptr[SayChatAction]
 	}
 }
+#pragma endregion
+
+#pragma region target.exe
+DWORD target_print_jumpback;
+DWORD Number;
+void __declspec(naked) targetPrintNumberHook() {
+	__asm {
+		push edx
+		mov edx, dword ptr[ebp - 8]
+		mov Number, edx
+		pop edx
+	}
+	std::cout << "read number: " << Number << std::endl;
+	__asm {
+		mov eax, dword ptr[ebp - 8]
+		add eax, 1
+		jmp[target_print_jumpback]
+	}
+}
+#pragma endregion

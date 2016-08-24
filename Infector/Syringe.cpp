@@ -12,23 +12,43 @@ bool Syringe::Inject(char *targetExe, char * dll)
 	// The name of the process you want to inject
 	DWORD pId = Syringe::GetTargetThreadIdFromProcName(targetExe);
 
+	if (pId == 0) {
+		printf("Target: ERROR (Process not found): %s..\n", targetExe);
+		return false;
+	}
+	printf("Target: %s (%d)\n", targetExe, pId);
+
 	// Get the dll's full path name 
 	char dllPath[MAX_PATH] = { 0 };
 	GetFullPathName(dll, MAX_PATH, dllPath, NULL);
 
 	// check existence
 	if (!fileExists(dllPath)) {
-		printf("Dll not found: %s..", dllPath);
+		printf("Dll: ERROR (File not found):  %s..\n", dllPath);
 		return false;
 	}
 
 
-	printf("Injecting dll: %s\n", dllPath);
+	printf("Dll: %s\n", dllPath);
 
 	Proc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pId);
 	if (!Proc)
 	{
-		printf("OpenProcess() failed: %d", GetLastError());
+		int errorCode = GetLastError();
+		printf("OpenProcess() failed with error code: %d ", errorCode);
+		switch (errorCode) {
+		case 0x2:
+			printf("(ERROR_FILE_NOT_FOUND)\n");
+			break;
+		case 0x3:
+			printf("(ERROR_PATH_NOT_FOUND)\n");
+			break;
+		case 0x5:
+			printf("(ERROR_ACCESS_DENIED)\n");
+			break;
+		}
+		// https://msdn.microsoft.com/en-us/library/windows/desktop/ms681382(v=vs.85).aspx
+
 		return false;
 	}
 	LoadLibAddy = (LPVOID)GetProcAddress(GetModuleHandle("kernel32.dll"), "LoadLibraryA");
