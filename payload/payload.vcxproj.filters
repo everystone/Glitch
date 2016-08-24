@@ -34,6 +34,9 @@
     <ClInclude Include="Hack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="luawrapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -48,5 +51,11 @@
     <ClCompile Include="Hack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="luawrapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

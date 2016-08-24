@@ -13,6 +13,7 @@ DWORD WINAPI MainThread(LPVOID param) {
 	printf("Injected!\nBaseAddress: %x\n\n", baseAddress);
 	Hack::Init(baseAddress);
 
+	Lua.execute("C:\\temp\\hello.lua");
 	//message = "Injected";
 	//sayChat();
 	// Instlal Starbound hooks
