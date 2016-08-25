@@ -13,12 +13,12 @@ DWORD WINAPI MainThread(LPVOID param) {
 	printf("Injected!\nBaseAddress: %x\n\n", baseAddress);
 	Hack::Init(baseAddress);
 
-	Lua.execute("C:\\temp\\hello.lua");
+	 //Lua.execute("C:\\temp\\hello.lua");
 	//message = "Injected";
 	//sayChat();
 	// Instlal Starbound hooks
 
-	//Hack::InstallHook(0x2D4D6A, 5, (DWORD)SayChatActionHook, SayChatActionReturnAddress);
+	 //Hack::InstallHook(0x2D4D6A, 5, (DWORD)SayChatActionHook, SayChatActionReturnAddress);
 	Hack::InstallHook(0x1250E, 6, (DWORD)targetPrintNumberHook, target_print_jumpback); // base: 40000
 
 	//FreeLibraryAndExitThread((HMODULE)param, 0);
@@ -34,6 +34,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 	switch (ul_reason_for_call)
 	{
 	case DLL_PROCESS_ATTACH:
+		MessageBoxA(0, "Injected", "asaaa", 0);
 		CreateThread(0, 0, MainThread, hModule, 0, 0);
 	case DLL_THREAD_ATTACH:
 

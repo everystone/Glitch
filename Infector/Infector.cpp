@@ -12,11 +12,11 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 	// Inject our main dll
-	/*if (Syringe::Inject("starbound.exe", "..\\debug\\payload.dll"))*/
+	//if (Syringe::Inject("starbound.exe", "..\\debug\\payload.dll"))
 	if (Syringe::Inject(argv[1], argv[2]))
 	{
 		printf("DLL Successfully injected. Exiting..");
-		Sleep(1000);
+		Sleep(10000);
 	}
 	else {
 		printf("DLL Injection failed, press return to exit.");

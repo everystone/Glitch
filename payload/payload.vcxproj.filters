@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\hooks">
+      <UniqueIdentifier>{d6d53f52-1429-4aff-8304-76b9b3ef844e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -28,14 +31,14 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="hooks.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Hack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="luawrapper.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="hooks.h">
+      <Filter>Header Files\hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="terraria.h">
+      <Filter>Header Files\hooks</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -49,9 +52,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hack.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="luawrapper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

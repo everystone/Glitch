@@ -28,35 +28,25 @@ bool Syringe::Inject(char *targetExe, char * dll)
 		return false;
 	}
 
-
 	printf("Dll: %s\n", dllPath);
 
 	Proc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pId);
 	if (!Proc)
 	{
-		int errorCode = GetLastError();
-		printf("OpenProcess() failed with error code: %d ", errorCode);
-		switch (errorCode) {
-		case 0x2:
-			printf("(ERROR_FILE_NOT_FOUND)\n");
-			break;
-		case 0x3:
-			printf("(ERROR_PATH_NOT_FOUND)\n");
-			break;
-		case 0x5:
-			printf("(ERROR_ACCESS_DENIED)\n");
-			break;
-		}
-		// https://msdn.microsoft.com/en-us/library/windows/desktop/ms681382(v=vs.85).aspx
-
+		printError("OpenProcess", GetLastError());
 		return false;
 	}
 	LoadLibAddy = (LPVOID)GetProcAddress(GetModuleHandle("kernel32.dll"), "LoadLibraryA");
 	// Allocate space in the process for our DLL
 	RemoteString = (LPVOID)VirtualAllocEx(Proc, NULL, strlen(dllPath), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 	// Write the string name of our DLL in the memory allocated 
-	WriteProcessMemory(Proc, (LPVOID)RemoteString, dllPath, strlen(dllPath), NULL);
-	CreateRemoteThread(Proc, NULL, NULL, (LPTHREAD_START_ROUTINE)LoadLibAddy, (LPVOID)RemoteString, NULL, NULL);
+	if (WriteProcessMemory(Proc, (LPVOID)RemoteString, dllPath, strlen(dllPath), NULL) == 0) {
+		printError("WriteProcessMemory", GetLastError());
+		return false;
+	}
+	if (CreateRemoteThread(Proc, NULL, NULL, (LPTHREAD_START_ROUTINE)LoadLibAddy, (LPVOID)RemoteString, NULL, NULL) == NULL) {
+		printError("CreateRemoteThread", GetLastError());
+	}
 	CloseHandle(Proc);
 	return true;
 }
@@ -98,4 +88,20 @@ bool Syringe::fileExists(const std::string& name)
 		return false;
 	}
 
+}
+
+void Syringe::printError(char *method, int errorCode) {
+	// https://msdn.microsoft.com/en-us/library/windows/desktop/ms681382(v=vs.85).aspx
+	printf("%s failed with error code: %d ", method, errorCode);
+	switch (errorCode) {
+	case 0x2:
+		printf("(ERROR_FILE_NOT_FOUND)\n");
+		break;
+	case 0x3:
+		printf("(ERROR_PATH_NOT_FOUND)\n");
+		break;
+	case 0x5:
+		printf("(ERROR_ACCESS_DENIED)\n");
+		break;
+	}
 }

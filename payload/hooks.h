@@ -1,9 +1,9 @@
 #pragma once
 #include <Windows.h>
 #include <iostream>
-#include "luawrapper.h"
-
-luawrapper Lua;
+//#include "luawrapper.h"
+//
+//luawrapper Lua;
 
 #pragma region Starbound
 /*

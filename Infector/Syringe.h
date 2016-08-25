@@ -12,5 +12,6 @@ public:
 private:
 	static DWORD GetTargetThreadIdFromProcName(const char * ProcName);
 	static bool fileExists(const std::string& name);
+	static void printError(char *method, int errorCode);
 };
 
